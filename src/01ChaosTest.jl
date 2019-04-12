@@ -42,11 +42,7 @@ function Dn_c_tilde(ϕ, c, ncut)
 end
 
 # The asymptotic growth rate
-function K_c(ϕ, c, ncut)
-    return log.(Mn_c(ϕ, c, ncut) .+ 1e-5) ./ log.(1:ncut)
-end
-
-function K_c_lim(ϕ, c, ncut)
+function Kc(ϕ, c, ncut)
     linear_func = (x, p) -> p[1] .+ p[2] .* x
     fit = curve_fit(linear_func, log.(1:ncut), log.(Dn_c_tilde(ϕ, c, ncut)[1:end] .+ 1e-2), [0, 0.5])
     return fit.param[2]
@@ -54,8 +50,7 @@ end
 
 @inline function regressionmethod(ϕ, ncut)
     c_range = 0.01:0.01:2π
-    K_lim = [K_c_lim(ϕ, c, ncut) for c in c_range]
-    return median(K_lim)
+    return median([Kc(ϕ, c, ncut) for c in c_range])
 end
 
 @inline function correlationmethod(ϕ, ncut)
